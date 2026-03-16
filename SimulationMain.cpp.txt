@@ -1,0 +1,19 @@
+#include <iostream>
+#include "NPC_AI_Controller.cpp" // Linking your first file
+
+int main() {
+    std::cout << "Starting Autonomous Agent Simulation..." << std::endl;
+    
+    // Initialize Simulation Environment
+    bool isRunning = true;
+    int tickCount = 0;
+
+    while (isRunning && tickCount < 100) {
+        // Human-style: Basic simulation loop for testing AI states
+        std::cout << "Processing Tick: " << tickCount << std::endl;
+        tickCount++;
+    }
+
+    std::cout << "Simulation Complete." << std::endl;
+    return 0;
+}
