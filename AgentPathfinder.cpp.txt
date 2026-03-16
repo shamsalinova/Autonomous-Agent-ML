@@ -1,0 +1,25 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+// Simple A* inspired heuristic for autonomous navigation
+class Pathfinder {
+public:
+    float CalculateDistance(float x1, float y1, float x2, float y2) {
+        // Human-style: Using Euclidean distance for path cost
+        return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
+    }
+
+    int SelectNextNode(std::vector<float> costs) {
+        int bestNode = 0;
+        float minCost = costs[0];
+        
+        for (int i = 1; i < costs.size(); ++i) {
+            if (costs[i] < minCost) {
+                minCost = costs[i];
+                bestNode = i;
+            }
+        }
+        return bestNode;
+    }
+};
