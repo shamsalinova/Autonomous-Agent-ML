@@ -1,0 +1,39 @@
+#include "NPC_AI_Controller.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+
+// Constructor: Setting up the AI's "Eyes" (Perception)
+ANPC_AI_Controller::ANPC_AI_Controller() {
+    PrimaryActorTick.bCanEverTick = true;
+
+    // Create the perception component
+    AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
+    SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
+
+    // Configure how far the AI can see
+    SightConfig->SightRadius = 2000.f;
+    SightConfig->LoseSightRadius = 2500.f;
+    SightConfig->PeripheralVisionAngleDegrees = 90.f;
+    
+    AIPerception->ConfigureSense(*SightConfig);
+    AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
+
+    // Link the function that reacts when the AI sees something
+    AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &ANPC_AI_Controller::OnSensesUpdated);
+}
+
+// Logic for reacting to the environment
+void ANPC_AI_Controller::OnSensesUpdated(AActor* Actor, FAIStimulus Stimulus) {
+    if (Blackboard == nullptr) return;
+
+    if (Stimulus.WasSuccessfullySensed()) {
+        // Human-style logic: If I see the player, update the target
+        Blackboard->SetValueAsObject("TargetActor", Actor);
+        Blackboard->SetValueAsEnum("AIState", 1); // State 1: Attacking/Chasing
+    } else {
+        // If I lose sight, clear the target and go back to searching
+        Blackboard->ClearValue("TargetActor");
+        Blackboard->SetValueAsEnum("AIState", 0); // State 0: Patrolling
+    }
+}
